@@ -1,265 +1,207 @@
-﻿Credit Card Fraud Detection Using Machine Learning and FastAPI
-1. Introduction
-This project implements an end-to-end credit card fraud detection system using machine learning techniques and a real-time prediction API.
-The goal is to classify each credit card transaction as Fraudulent or Genuine, using the European Credit Card Fraud Dataset (284,807 transactions with only 492 frauds – 0.172%).
-The project addresses the following challenges:
-* Extremely imbalanced dataset
+﻿CREDIT CARD FRAUD DETECTION USING MACHINE LEARNING AND FASTAPI
+1. INTRODUCTION
+This repository contains an end-to-end credit card fraud detection system developed using machine learning and deployed through FastAPI. The objective is to accurately identify fraudulent transactions using the European Credit Card Fraud Dataset, which consists of 284,807 transactions with only 492 fraud cases (0.172%).
+Fraud detection is challenging due to extreme class imbalance, anonymized PCA features, and the need for real-time predictions. This project includes exploratory analysis, preprocessing, oversampling with SMOTE, training multiple models, hyperparameter tuning, and deploying the final model (tuned XGBoost) behind a FastAPI interface.
+Important:
+ GitHub cannot preview the PDF project report due to its size.
+ Please download the PDF to read it.
 
-* PCA-transformed anonymized features
-
-* Outlier-heavy amount values
-
-* Requirement for high precision and recall
-
-* Real-time deployment for practical integration
-
-The final system includes data preprocessing, SMOTE oversampling, training multiple models, selecting the best classifier (tuned XGBoost), and deploying the model using FastAPI.
-________________
-
-
-2. Tech Stack and Component Overview
-Machine Learning and Data Processing
-   1. Python – Main development language
-
-   2. Pandas, NumPy – Data handling and numerical operations
-
-   3. Scikit-Learn – Preprocessing, train/test split, evaluation
-
-   4. Imbalanced-Learn (SMOTE) – Handling class imbalance
-
-   5. XGBoost – Final selected classifier
-
-   6. LightGBM, Logistic Regression, Neural Network, Autoencoder – Secondary models for comparison
-
+2. TECH STACK AND COMPONENT OVERVIEW
+Machine Learning & Data Processing
+Python
+Pandas, NumPy
+Scikit-Learn
+Imbalanced-Learn (SMOTE)
+XGBoost (final model)
+LightGBM, Logistic Regression, Neural Network, Autoencoder (additional models)
 Deployment
-      1. FastAPI – High-performance web framework for building the API
-
-      2. Uvicorn – ASGI server to run the FastAPI application
-
-      3. Pydantic – Input validation for prediction requests
-
-      4. Joblib – Saving and loading the trained model
-
-Development Tools
-         * Jupyter Notebook – Exploratory analysis & model development
-
-         * Matplotlib/Seaborn – Data visualization
-
-________________
+FastAPI
+Uvicorn
+Pydantic
+Joblib
 
 
-3. Project Structure
+Tools
+Jupyter Notebook
+Matplotlib and Seaborn
+
+3. PROJECT STRUCTURE
 credit-card-fraud-detection/
-│
-├── dataset/
-│     └── creditcard.csv
-│
-├── notebooks/
-│     └── fraud_detection.ipynb
-│
-├── models/
-│     └── fraud_model.joblib
-│
-├── api/
-│     ├── main.py
-│     ├── schema.py
-│     └── preprocessing.py
-│
-├── report/
-│     └── Final_Report.pdf
-│
-├── README.md
-└── requirements.txt
+ │
+ ├── dataset/
+ │ creditcard.csv
+ │
+ ├── notebooks/
+ │ fraud_detection.ipynb
+ │
+ ├── models/
+ │ fraud_model.joblib
+ │
+ ├── api/
+ │ main.py
+ │ schema.py
+ │ preprocessing.py
+ │
+ ├── report/
+ │ Final_Report.pdf
+ │
+ ├── README.md
+ └── requirements.txt
+
+4. MODEL PIPELINE OVERVIEW
+Full Workflow
+Raw data loading
 
 
-________________
+Exploratory analysis
 
 
-4. Model Pipeline Overview
-Complete Data and Model Pipeline
-            1. Raw Data Loading
+Preprocessing
 
-            2. Exploratory Data Analysis
 
-            3. Preprocessing
+Stratified train-test split
 
-               * Handling skewed Amount field
 
-               * Scaling Time and Amount using RobustScaler
+SMOTE oversampling (training only)
 
-               * Dropping original columns
 
-                  4. Train/Test Split
+Model training (LR, XGBoost, LGBM, NN, Autoencoder)
 
-                     * Stratified to preserve fraud ratio
 
-                        5. SMOTE Oversampling on Training Data Only
+Evaluation using precision, recall, F1
 
-                        6. Model Training
 
-                           * Logistic Regression
+Hyperparameter tuning (XGBoost)
 
-                           * XGBoost
 
-                           * LightGBM
+Model selection
 
-                           * Neural Network
 
-                           * Autoencoder
+Saving model with Joblib
 
-                              7. Model Evaluation
 
-                                 * Precision, Recall, F1-score
+FastAPI deployment
 
-                                    8. Hyperparameter Tuning
 
-                                       * RandomizedSearchCV for XGBoost
-
-                                          9. Model Selection (XGBoost)
-
-                                          10. Model Saving with Joblib
-
-                                          11. FastAPI Deployment
-
-Pipeline Diagram (Text Representation)
+Text Diagram
 Raw Data
-   ↓
-Preprocessing (Scaling, Feature Replacement)
-   ↓
-Train/Test Split (Stratified)
-   ↓
-SMOTE Oversampling (Training set only)
-   ↓
-Model Training (LR, XGBoost, LGBM, NN, Autoencoder)
-   ↓
-Model Evaluation (Precision, Recall, F1)
-   ↓
-Hyperparameter Tuning (RandomizedSearchCV)
-   ↓
-Best Model Saved (joblib)
-   ↓
-FastAPI Deployment
-   ↓
-User Sends JSON → Model Predicts → Response Returned
+ ↓
+ Preprocessing
+ ↓
+ Train/Test Split
+ ↓
+ SMOTE (Train Only)
+ ↓
+ Model Training
+ ↓
+ Evaluation
+ ↓
+ Tuning
+ ↓
+ Final Model Saved
+ ↓
+ FastAPI Deployment
+ ↓
+ Client Sends JSON → Model Predicts → Response Returned
 
-
-________________
-
-
-5. FastAPI System Overview
+5. FASTAPI SYSTEM OVERVIEW
 Purpose
-To provide a real-time fraud prediction service which accepts transaction data as JSON and returns both:
-                                             * Fraud/Genuine classification
-
-                                             * Fraud probability score
-
-How FastAPI Works in This Project
-                                                * Loads the trained XGBoost model
-
-                                                * Accepts POST requests at /predict
-
-                                                * Validates input via Pydantic schema
-
-                                                * Applies preprocessing (scaling)
-
-                                                * Passes data to the model
-
-                                                * Returns prediction as JSON
-
-API Architecture (Text Diagram)
-Client Application
-        ↓
-POST /predict (JSON Input)
-        ↓
-FastAPI Endpoint
-        ↓
-Pydantic Validation
-        ↓
-Preprocessing Module
-        ↓
-XGBoost Model (joblib)
-        ↓
-Prediction (label + probability)
-        ↓
-JSON Response
+ The API provides real-time fraud predictions based on JSON transaction input.
+How It Works
+Model is loaded at server startup
 
 
-________________
+User sends data to /predict
 
 
-6. How to Run the Project Locally
-Step 1: Clone the Repository
-git clone https://github.com/yourusername/credit-card-fraud-detection.git
-cd credit-card-fraud-detection
+Pydantic checks and validates inputs
 
 
+Preprocessing is applied
+
+
+XGBoost generates probability & classification
+
+
+API returns structured JSON output
+
+
+Architecture
+Client
+ ↓
+ POST /predict
+ ↓
+ FastAPI
+ ↓
+ Validation
+ ↓
+ Preprocessing
+ ↓
+ Model
+ ↓
+ Response Returned
+
+6. HOW TO RUN THE PROJECT LOCALLY
+Step 1: Clone
+ git clone https://github.com/yourusername/credit-card-fraud-detection.git
+ cd credit-card-fraud-detection
 Step 2: Install Dependencies
-pip install -r requirements.txt
+ pip install -r requirements.txt
+Step 3: Run API
+ cd api
+ uvicorn main:app --reload
 
 
-Step 3: Start the FastAPI Server
-cd api
-uvicorn main:app --reload
+7. USER MANUAL
+Sending a Prediction
+ Send a POST request to /predict with all required fields (Time, Amount, V1–V28).
+Example (structure only):
+ Time: 10000
+ Amount: 150.67
+ V1: -1.23
+ V2: 0.57
+ ...
+ V28: -0.18
+Using curl:
+ curl -X POST http://127.0.0.1:8000/predict -H Content-Type:application/json -d @input.json
+Example Output
+ prediction: Fraudulent
+ fraud_probability: 0.9824
+Notes
+All 30 required fields must be present and numeric
 
 
-Server runs at:
-http://127.0.0.1:8000
+Incorrect field names or missing values result in validation errors
 
 
-Open documentation:
-http://127.0.0.1:8000/docs
+
+8. TROUBLESHOOTING
+Model Missing
+ Place fraud_model.joblib inside the models/ directory.
+Validation Errors
+ Verify JSON body contains Time, Amount, V1–V28.
+Server Not Starting
+ Ensure Uvicorn is installed:
+ pip install uvicorn
+
+9. FUTURE ENHANCEMENTS
+SHAP explanations
 
 
-________________
+Real-time monitoring dashboard
 
 
-7. User Manual
-7.1 Sending a Prediction Request
-POST request to /predict
-Example JSON body:
-{
-    "Time": 10000,
-    "Amount": 150.67,
-    "V1": -1.23,
-    "V2": 0.57,
-    ...
-    "V28": -0.18
-}
+Sequence modeling (LSTM / Transformers)
 
 
-Use:
-curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json" -d @input.json
+Automated retraining
 
 
-7.2 Example Response
-{
-    "prediction": "Fraudulent",
-    "fraud_probability": 0.9824
-}
+Git LFS support for large datasets
 
 
-________________
 
+Some Python files include long separator lines like:
+-------------------------------------------------
+These are simply manual visual dividers added to make the code easier to read.
 
-8. Troubleshooting
-Common Issues
-                                                   * Model not found
- Ensure fraud_model.joblib is in models/.
-
-                                                   * Validation error
- All 30 numerical fields must be present.
-
-                                                   * Server not starting
- Check Uvicorn installation and Python path.
-
-________________
-
-
-9. Future Enhancements
-                                                      * Add SHAP model explainability to API
-
-                                                      * Implement real-time monitoring dashboard
-
-                                                      * Integrate LSTM/Transformers for sequence modeling
-
-                                                      * Automate retraining for concept drift
